@@ -284,7 +284,7 @@ df_graficos[cols_tiempos] = df_graficos[cols_tiempos].apply(pd.to_numeric, error
 
 # Inicializar variable de sesión si no existe
 if "pagina" not in st.session_state:
-    st.session_state.pagina = "Reporte"
+    st.session_state.pagina = "Tiempos promedio de zona"
 
 # Función para cambiar de página
 def cambiar_pagina(pagina):
@@ -689,3 +689,4 @@ elif pagina == "Detalle Zonas":
 
     else:
         st.info("No hay columnas de tiempo disponibles para graficar.")
+
