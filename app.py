@@ -427,10 +427,13 @@ elif pagina == "Tiempos promedio de zona":
     # ============================
     df_tipo_prom = (
         df_graficos
+        .assign(**{c: df_graficos[c].replace(0, pd.NA) for c in cols_tiempos})
         .groupby("Tipo")[cols_tiempos]
         .mean()
         .reset_index()
     )
+
+    df_tipo_prom = df_tipo_prom.fillna(0)
 
     df_tipo_long = df_tipo_prom.melt(
         id_vars="Tipo",
@@ -705,6 +708,7 @@ elif pagina == "Detalle Zonas":
 
     else:
         st.info("No hay columnas de tiempo disponibles para graficar.")
+
 
 
 
