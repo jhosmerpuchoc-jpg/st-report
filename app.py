@@ -576,9 +576,7 @@ elif pagina == "Tiempos promedio de zona":
 # PÁGINA: Tiempos promedio por ubicación
 # ==============================
 elif pagina == "Detalle Zonas":
-
-    st.subheader("Visualización de tiempos promedio por ubicación")
-
+    
     if cols_tiempos:
 
         # --------------------------------------------------
