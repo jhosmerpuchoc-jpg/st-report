@@ -438,6 +438,9 @@ elif pagina == "Tiempos promedio de zona":
         }
     )
     fig_tipo.update_traces(textposition='outside')
+
+    max_y = df_tipo_long["Promedio_minutos"].max()
+
     fig_tipo.update_layout(
         xaxis_tickangle=-45,
         yaxis_title="Tiempo promedio (minutos)",
@@ -452,8 +455,12 @@ elif pagina == "Tiempos promedio de zona":
         )
     )
 
-    st.plotly_chart(fig_tipo, use_container_width=True)
+    fig_tipo.update_yaxes(
+        range=[0, max_y * 1.25],
+        automargin=True
+    )
 
+    st.plotly_chart(fig_tipo, use_container_width=True)
 
 # ==============================
 # PÁGINA: Tiempos promedio por ubicación
