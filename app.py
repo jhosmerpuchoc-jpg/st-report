@@ -12,7 +12,7 @@ from streamlit_autorefresh import st_autorefresh
 # CONFIGURACIÓN STREAMLIT
 # ==============================
 st.set_page_config(
-    page_title="Telemetría NIA",
+    page_title="Smart Tracking Report",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -705,6 +705,7 @@ elif pagina == "Detalle Zonas":
 
     else:
         st.info("No hay columnas de tiempo disponibles para graficar.")
+
 
 
 
