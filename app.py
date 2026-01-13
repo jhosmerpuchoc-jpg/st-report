@@ -482,7 +482,6 @@ elif pagina == "Tiempos promedio de zona":
         )
     )
 
-
     fig_tipo.update_traces(textposition="outside")
 
     # ============================
@@ -588,57 +587,65 @@ elif pagina == "Detalle Zonas":
         orden_ubicaciones = list(dict.fromkeys(cols_tiempos))
 
         # --------------------------------------------------
-        # 2️⃣ SELECTOR DE TIPO
+        # LAYOUT: SELECTORES (30%) | TABLA (70%)
         # --------------------------------------------------
-        tipos_disponibles = df_graficos["Tipo"].dropna().unique().tolist()
-        selected_tipo = st.selectbox(
-            "Seleccione tipo",
-            tipos_disponibles
-        )
+        col_filtros, col_tabla = st.columns([2, 8])
 
-        # --------------------------------------------------
-        # 3️⃣ FILTRAR DF POR TIPO
-        # --------------------------------------------------
-        df_tipo = df_graficos[df_graficos["Tipo"] == selected_tipo]
+        # ==================================================
+        # COLUMNA IZQUIERDA – SELECTORES (30%)
+        # ==================================================
+        with col_filtros:
+            st.subheader("Filtros")
 
-        # --------------------------------------------------
-        # 4️⃣ PROMEDIOS POR UBICACIÓN (SIN ORDENAR)
-        # --------------------------------------------------
-        prom_ubicacion = df_tipo[orden_ubicaciones].mean().reset_index()
-        prom_ubicacion.columns = ["Ubicación", "Promedio_minutos"]
+            # 2️⃣ SELECTOR DE TIPO
+            tipos_disponibles = df_graficos["Tipo"].dropna().unique().tolist()
+            selected_tipo = st.selectbox(
+                "Seleccione tipo",
+                tipos_disponibles
+            )
 
-        # --------------------------------------------------
-        # 5️⃣ SELECTOR DE UBICACIÓN
-        # --------------------------------------------------
-        selected_location = st.selectbox(
-            "Seleccione ubicación",
-            orden_ubicaciones
-        )
+            # 3️⃣ FILTRAR DF POR TIPO
+            df_tipo = df_graficos[df_graficos["Tipo"] == selected_tipo]
 
-        # --------------------------------------------------
-        # 6️⃣ DETALLE POR NIA
-        # --------------------------------------------------
-        nias_filtradas = (
-            df_tipo[["NIA", selected_location]]
-            .rename(columns={selected_location: "Tiempo (min)"})
-            .sort_values("Tiempo (min)", ascending=False)
-        )
+            # 5️⃣ SELECTOR DE UBICACIÓN
+            selected_location = st.selectbox(
+                "Seleccione ubicación",
+                orden_ubicaciones
+            )
 
-        promedio_val = prom_ubicacion.loc[
-            prom_ubicacion["Ubicación"] == selected_location,
-            "Promedio_minutos"
-        ].values[0]
+        # ==================================================
+        # COLUMNA DERECHA – TABLA (70%)
+        # ==================================================
+        with col_tabla:
+            st.subheader("Detalle por NIA")
 
-        st.write(
-            f"Tiempo promedio en **{selected_location}** "
-            f"para tipo **{selected_tipo}**: "
-            f"{promedio_val:.2f} minutos"
-        )
+            # 4️⃣ PROMEDIOS POR UBICACIÓN (SIN ORDENAR)
+            prom_ubicacion = df_tipo[orden_ubicaciones].mean().reset_index()
+            prom_ubicacion.columns = ["Ubicación", "Promedio_minutos"]
 
-        st.dataframe(
-            nias_filtradas.reset_index(drop=True),
-            width='stretch'
-        )
+            # 6️⃣ DETALLE POR NIA
+            nias_filtradas = (
+                df_tipo[["NIA", "Ingreso", "Empresa", selected_location]]
+                .rename(columns={selected_location: "Tiempo (min)"})
+                .sort_values("Tiempo (min)", ascending=False)
+                .reset_index(drop=True)
+            )
+
+            promedio_val = prom_ubicacion.loc[
+                prom_ubicacion["Ubicación"] == selected_location,
+                "Promedio_minutos"
+            ].values[0]
+
+            st.write(
+                f"Tiempo promedio en **{selected_location}** "
+                f"para tipo **{selected_tipo}**: "
+                f"{promedio_val:.2f} minutos"
+            )
+
+            st.dataframe(
+                nias_filtradas,
+                width='stretch'
+            )
 
         # --------------------------------------------------
         # 7️⃣ RESPETAR ORDEN EN PLOTLY
