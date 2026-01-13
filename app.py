@@ -423,25 +423,35 @@ elif pagina == "Tiempos promedio de zona":
     st.subheader("Tiempo promedio por Zona y Tipo")
 
     # ============================
-    # PREPARAR DATOS
+    # PREPARAR DATA NUMÉRICA
+    # (0 → NaN solo en columnas de tiempo)
+    # ============================
+    df_num = df_graficos[cols_tiempos].where(
+        df_graficos[cols_tiempos] != 0
+    )
+    
+    # ============================
+    # PROMEDIO POR TIPO Y ZONA
     # ============================
     df_tipo_prom = (
-        df_graficos
-        .assign(**{c: df_graficos[c].replace(0, pd.NA) for c in cols_tiempos})
-        .groupby("Tipo")[cols_tiempos]
+        pd.concat([df_graficos["Tipo"], df_num], axis=1)
+        .groupby("Tipo", sort=False)
         .mean()
         .reset_index()
     )
-
-    df_tipo_prom = df_tipo_prom.fillna(0)
-
+    
+    # ============================
+    # LONG FORMAT PARA PLOTLY
+    # ============================
     df_tipo_long = df_tipo_prom.melt(
         id_vars="Tipo",
         var_name="Ubicación",
         value_name="Promedio_minutos"
     )
-
-    # Orden real del eje X
+    
+    # ============================
+    # ORDEN REAL DEL EJE X
+    # ============================
     orden_x = df_tipo_long["Ubicación"].unique().tolist()
 
     # ============================
@@ -738,6 +748,7 @@ elif pagina == "Detalle Zonas":
 
     else:
         st.info("No hay columnas de tiempo disponibles para graficar.")
+
 
 
 
